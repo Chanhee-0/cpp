@@ -1,0 +1,362 @@
+/*너구리(★)가 적(☆)을 피해 모든 사과(·)를 먹는 게임입니다.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <conio.h>
+#include <process.h>
+#include <Windows.h>
+
+#define U 72
+#define D 80
+#define L 75
+#define R 77
+
+int map[5][10] = {
+   { 0,0,0,0,0,0,0,0,0,0 },
+   { 0,2,2,2,2,0,2,2,2,0 },
+   { 0,0,0,0,0,0,0,0,0,0 },
+   { 0,2,2,2,2,0,2,2,2,0 },
+   { 0,0,0,0,0,0,0,0,0,0 }
+}; // 0 길, 1 사과, 2 벽
+int g_x, g_y, life = 1; // 게이머
+int e1, e2, e3; // 3대의 컴퓨터 (적)
+int apple = 0; // 사과 개수
+HANDLE hMutex;
+int s = 300; // Sleep 시간
+
+void gotoxy(int x, int y)
+{
+   COORD pos = { x * 2, y };
+   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+void removecursor() // 커서 깜빡임을 없애주는 함수
+{
+   CONSOLE_CURSOR_INFO cur;
+   GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+   cur.bVisible = 0;
+   SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+}
+
+void map_print() // 맵 출력
+{
+   system("cls");
+   for (int i = 0; i < 5; i++)
+   {
+      for (int j = 0; j < 10; j++)
+      {
+         if (map[i][j] == 0)
+            printf("　"); // 길 (빈칸)
+         else if (map[i][j] == 1)
+            printf("·"); // 사과
+         else
+            printf("■"); // 벽
+      }
+      printf("\n");
+   }
+}
+
+void create_gamer() // 유저 생성
+{
+   for (int i = 0; i < 1;)
+   {
+      g_x = rand() % 10;
+      g_y = rand() % 5;
+
+      if (map[g_y][g_x] == 0) // 랜덤 위치가 벽이 아닌 빈칸일 때 생성
+         i++;
+   }
+}
+
+void create_enemy(int *x, int y) // 적 생성
+{
+   for (int i = 0; i < 1;)
+   {
+      *x = rand() % 10;
+
+      if (y == g_y && *x == g_x) // 유저의 위치와 같은 경우를 제외
+      {
+
+      }
+      else if (map[y][*x] == 0)
+         i++;
+   }
+}
+
+void create_apple(int p)
+{
+   for (int i = 0; i < 5; i++)
+   {
+      for (int j = 0; j < 10; j++)
+      {
+         if (i == g_y && j == g_x) // 유저의 위치
+         {
+
+         }
+         else if (i == 0 && e1 == j) // 적의 위치와 같은 경우를 제외
+         {
+
+         }
+         else if (i == 2 && e2 == j)
+         {
+
+         }
+         else if (i == 4 && e3 == j)
+         {
+
+         }
+         else if (map[i][j] == 0)
+         {
+            int n = rand() % 100; // 백분율
+
+            if (n < p) // 입력 받은 생성 확률
+            {
+               map[i][j] = 1; // 사과 생성
+               apple++; // 사과의 개수
+            }
+         }
+      }
+   }
+}
+
+void gamer_move(int input)
+{
+   gotoxy(g_x, g_y); printf("　"); // 현재 위치 지우기
+
+   if (input == U && g_y != 0 && map[g_y - 1][g_x] != 2)
+      g_y--;
+   else if (input == D && g_y != 4 && map[g_y + 1][g_x] != 2)
+      g_y++;
+   else if (input == L)
+   {
+      if (g_x == 0 && g_y != 1 && g_y != 3)
+         g_x = 9; // 유저는 맵의 끝과 끝을 넘나들 수 있다
+      else if (g_x != 0 && map[g_y][g_x - 1] != 2)
+         g_x--;
+   }
+   else if (input == R)
+   {
+      if (g_x == 9 && g_y != 1 && g_y != 3)
+         g_x = 0;
+      else if (g_x != 9 && map[g_y][g_x + 1] != 2)
+         g_x++;
+   }
+
+   gotoxy(g_x, g_y); printf("★"); // 유저를 움직인 후 출력
+
+   if (map[g_y][g_x] == 1) // 사과를 먹었을 경우
+   {
+      apple--; // 사과의 개수를 줄이고
+      map[g_y][g_x] = 0; // 빈칸으로 만든다
+   }
+   if ((e1 == g_x && 0 == g_y) || (e2 == g_x && 2 == g_y) || (e3 == g_x && 4 == g_y)) // 적과 유저가 만나면 게임 종료
+   {
+      life = 0;
+      return;
+   }
+}
+
+unsigned __stdcall enemy1(void *arg) // 적1의 스레드
+{
+   int d = 0; // 좌우 방향
+
+   while (life == 1 && apple != 0) // 게임이 종료되었을 때 스레드를 멈추게 한다
+   {
+      WaitForSingleObject(hMutex, INFINITE);
+
+      Sleep(s);
+      if (s > 50) s -= 10; // 점점 빨라지게 한다
+
+      gotoxy(e1, 0);
+      if (map[0][e1] == 1) printf("·"); // 사과가 있던 자리엔 다시 사과를 출력
+      else printf("　");
+
+      if (d == 0) // 좌로 이동
+      {
+         if (e1 == 0)
+         {
+            d = 1;
+            (e1)++;
+         }
+         else
+            (e1)--;
+      }
+      else if (d == 1) // 우로 이동
+      {
+         if (e1 == 9)
+         {
+            d = 0;
+            (e1)--;
+         }
+         else
+            (e1)++;
+      }
+      gotoxy(e1, 0); printf("☆");
+
+      if (e1 == g_x && 0 == g_y) // 적과 유저가 만나면 게임 종료
+      {
+         life = 0;
+         return 0;
+      }
+
+      ReleaseMutex(hMutex);
+   }
+   return 0;
+}
+
+unsigned __stdcall enemy2(void *arg) // 적2의 스레드
+{
+   int d = 0;
+
+   while (life == 1 && apple != 0)
+   {
+      WaitForSingleObject(hMutex, INFINITE);
+
+      Sleep(s);
+      if (s > 50) s -= 10;
+
+      gotoxy(e2, 2);
+      if (map[2][e2] == 1) printf("·");
+      else printf("　");
+
+      if (d == 0)
+      {
+         if (e2 == 0)
+         {
+            d = 1;
+            (e2)++;
+         }
+         else
+            (e2)--;
+      }
+      else if (d == 1)
+      {
+         if (e2 == 9)
+         {
+            d = 0;
+            (e2)--;
+         }
+         else
+            (e2)++;
+      }
+      gotoxy(e2, 2); printf("☆");
+
+      if (e2 == g_x && 2 == g_y)
+      {
+         life = 0;
+         return 0;
+      }
+
+      ReleaseMutex(hMutex);
+   }
+   return 0;
+}
+
+unsigned __stdcall enemy3(void *arg) // 적3의 스레드
+{
+   int d = 0;
+
+   while (life == 1 && apple != 0)
+   {
+      WaitForSingleObject(hMutex, INFINITE);
+
+      Sleep(s);
+      if (s > 50) s -= 10;
+
+      gotoxy(e3, 4);
+      if (map[4][e3] == 1) printf("·");
+      else printf("　");
+
+      if (d == 0)
+      {
+         if (e3 == 0)
+         {
+            d = 1;
+            (e3)++;
+         }
+         else
+            (e3)--;
+      }
+      else if (d == 1)
+      {
+         if (e3 == 9)
+         {
+            d = 0;
+            (e3)--;
+         }
+         else
+            (e3)++;
+      }
+      gotoxy(e3, 4); printf("☆");
+
+      if (e3 == g_x && 4 == g_y)
+      {
+         life = 0;
+         return 0;
+      }
+
+      ReleaseMutex(hMutex);
+   }
+   return 0;
+}
+
+void main()
+{
+   srand(time(NULL));
+   removecursor();
+
+   while (1)
+   {
+      unsigned Threadid1; // 스레드 선언
+      unsigned Threadid2;
+      unsigned Threadid3;
+
+      create_gamer(); // 게이머 생성
+      create_enemy(&e1, 0); // 적 생성
+      create_enemy(&e2, 2);
+      create_enemy(&e3, 4);
+
+      int p; // probability
+      printf("사과 생성 확률(단위 %) : ");
+      scanf("%d", &p);
+
+      create_apple(p); // 사과 생성
+
+      map_print(); // 사과가 그려진 맵 출력
+
+      gotoxy(g_x, g_y); printf("★"); // 유저 및 적 출현
+      gotoxy(e1, 0); printf("☆");
+      gotoxy(e2, 2); printf("☆");
+      gotoxy(e3, 4); printf("☆");
+
+      hMutex = CreateMutex(NULL, FALSE, NULL); // 뮤텍스 선언
+
+      unsigned long hThread1 = _beginthreadex(NULL, 0, enemy1, NULL, 0, &Threadid1); // 스레드
+      unsigned long hThread2 = _beginthreadex(NULL, 0, enemy2, NULL, 0, &Threadid2);
+      unsigned long hThread3 = _beginthreadex(NULL, 0, enemy3, NULL, 0, &Threadid3);
+
+      while (1) // 유저 움직임
+      {
+         if (apple == 0 || life == 0) // 종료 조건 (사과를 다 먹거나 적과 접촉해 죽었을 때)
+            break;
+
+         if (_kbhit())
+         {
+            int input = _getch();
+            gamer_move(input);
+         }
+      }
+
+      gotoxy(0, 7);
+      printf("다시 시작하려면 ENTER");
+
+      int input = _getch();
+
+      if (input != 13) // 엔터가 아닐 경우 종료
+         break;
+
+      life = 1; // 유저는 살아난다
+      system("cls");
+   }
+}
