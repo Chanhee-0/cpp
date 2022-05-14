@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+
+int main()
+{
+	int H[6][6], P[6][6], i, j, hx, hy, px, py, g;
+
+	srand((unsigned)time(NULL));
+	do {
+		hx = rand() % 6;
+		hy = rand() % 6;
+		px = rand() % 6;
+		py = rand() % 6;
+	} while (hx == px && hy == py);
+	for(;;)
+	{
+		g = rand() % 4;
+		if (g == 0 && py > 0)
+			py--;
+		else if (g == 1 && px < 5)
+			px++;
+		else if (g == 2 && py < 5)
+			py++;
+		else if (g == 3 && px > 0)
+			px--;
+		for (i = 0; i < 6; i++)
+		{
+			for (j = 0; j < 6; j++)
+			{
+				if (hy == i && hx == j)
+					printf("H");
+				else if (py == i && px == j)
+					printf("P");
+				else
+					printf("*");
+			}
+			printf("\n");
+		}
+		if (hx == px && hy == py)
+			break;
+		Sleep(100);
+		system("cls");
+	}
+	return 0;
+}
