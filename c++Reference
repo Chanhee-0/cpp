@@ -1,26 +1,48 @@
-#include <string>
-#include <list>
-#include <vector>
-#include <array>
-#include <queue>
-#include <set>
-#include <map>
+#include<iostream>
+#include<string>
+#include<list>
+#include<vector>
+#include<array>
+#include<queue>
+#include<set>
+#include<map>
 
-string s; // string 선언
+using namespace std;
 
-s = "hello"; // 초기화
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
-s.erase(); // 내부를 비움
+	string s; // string 선언
 
-list l; // list 선언
+	s = "hello"; // string 초기화
+
+	string s("hello"); // string 초기화
+
+	s.assign("hello"); // string 초기화
+
+	s.clear(); // string 전체를 지운다
+
+	s.size(); // string의 사이즈 반환
 
 
-vector v; // vector 선언
+	list<int> l;
+
+	
+
+	vector<int> v;
 
 
-array arr; // array 선언
+
+	array <int, 50> arr;
 
 
-priority_queue<int> q; // priority_queue 선언 내림차순
 
-priority_queue<int, vector<int>, greater<int> > pq; // priority_queue 선언 오름차순
+	priority_queue<int> q; // priority_queue 선언 내림차순
+
+	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue 선언 오름차순
+
+
+	return 0;
+}
