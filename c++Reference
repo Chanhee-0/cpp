@@ -13,35 +13,57 @@ int main() {
 	ios::sync_with_stdio(false);
 	cin.tie(NULL);
 	cout.tie(NULL);
+	
+	int var = 0;
 
-	string s; // string 선언
+	string s; // string을 선언한다.
 
-	s = "hello"; // string 초기화
+	s = "hello"; // string을 초기화한다.
 
-	string s("hello"); // string 초기화
+	string s("hello"); // string을 초기화한다.
 
-	s.assign("hello"); // string 초기화
+	s.assign("hello"); // string을 초기화한다.
 
-	s.clear(); // string 전체를 지운다
+	s.clear(); // string 전체를 지운다.
 
-	s.size(); // string의 사이즈 반환
+	s.size(); // string의 사이즈 반환한다.
 
 
-	list<int> l;
-
+	list<int> l; // list를 선언한다.
+	
+	list<int>::iterator liter; // list의 iter선언 iter을 통해 list의 반복자를 반환해 순환 할 때 사용한다.
+	
+	l.push_back(var); // list의 끝에 변수 var값을 원소로 집어넣는다.
+	
+	l.erase(liter); // iter값에 해당하는 list를 하나 지운다.
+	
+	l.clear(); // list 내부 전체를 지운다.
+	
+	l.size(); // list의 사이즈를 반환한다.
+	
+	l.sort(); // list의 내부에 sort 내장 되어있어 간편하게 사용 가능 list 내부의 원소들을 내림차순으로 정리한다.
+	
+	l.reverse(); // list 내부의 원소들을 뒤집는다. 내림차순 -> 오름차순
 	
 
 	vector<int> v;
 
-
+	v.push_back(var); // vector의 끝에 변수 var값을 원소로 집어넣는다.
+	
+	v.size(); // vector의 사이즈를 반환한다.
+	
+	sort(v.begin(), v.end()); // vector 내부의 원소들을 오름차순으로 정리한다.
+	
+	sort(v.rbegin(), v.rend()); // vector의 내부에 기능인 rbegin()을 이용하여 원소들을 내림차순으로 정리한다.
+	
 
 	array <int, 50> arr;
 
 
 
-	priority_queue<int> q; // priority_queue 선언 내림차순
+	priority_queue<int> q; // priority_queue를 선언한다. 내림차순
 
-	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue 선언 오름차순
+	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue를 선언한다. 오름차순
 
 
 	return 0;
