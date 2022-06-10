@@ -30,6 +30,8 @@ int main() {
 	s.erase(0, 3); // string에서 0에서 3까지 해당하는 부분을 지운다.
 
 	s.clear(); // string 전체를 지운다.
+	
+	s.replace(0, 3, "aa"); // string에서 0에서 3까지 해당하는 부분 "aa"로 바꾼다.
 
 	s.size(); // string의 사이즈 반환한다.
 	
