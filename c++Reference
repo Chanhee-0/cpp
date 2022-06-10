@@ -27,6 +27,12 @@ int main() {
 	s.clear(); // string 전체를 지운다.
 
 	s.size(); // string의 사이즈 반환한다.
+	
+	stoi(s); // s 안의 문자열을 정수로 바꾼다.
+	
+	stoul(s); // s 안의 문자열을 부호 없는 정수로 바꾼다.
+	
+	stof(s); // s 안의 문자열을 부동 소수점 값으로 바꾼다.
 
 
 	list<int> l; // list를 선언한다.
