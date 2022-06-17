@@ -95,9 +95,9 @@ int main() {
 	
 	ms.count(var); // 원소 var의 갯수를 카운트한다.
 	
-	ms.lower_bound(var); // 원소 var가 시작하는 구간의 전 반복자를 반환한다. (50을 찾으면 그 전 반복자)
+	ms.lower_bound(var); // 원소 var가 시작하는 구간의 전 반복자를 반환한다. (var - 1 까지)
 	
-	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (이건 그럼 50 )
+	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (var + 1 부터 )
 
 
 	return 0;
