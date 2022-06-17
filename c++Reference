@@ -77,6 +77,14 @@ int main() {
 	priority_queue<int> q; // priority_queue를 선언한다. 내림차순
 
 	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue를 선언한다. 오름차순
+	
+	pq.push(var); // 변수 var에 있는 값을 큐에 집어넣는다.
+	
+	pq.top(); // 큐의 최상위값을 반환한다.
+	
+	pq.pop(); // 큐의 최상위값을 삭제한다.
+	
+	pq.size(); // 큐의 원소 갯수를 반환한다.
 
 
 	return 0;
