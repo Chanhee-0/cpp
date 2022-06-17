@@ -85,6 +85,19 @@ int main() {
 	pq.pop(); // 큐의 최상위값을 삭제한다.
 	
 	pq.size(); // 큐의 원소 갯수를 반환한다.
+	
+	
+	multiset<int> ms; // 멀티셋 ms를 선언한다. 오름차순
+	
+	ms.insert(var); // 변수 var에 있는 값을 멀티셋에 집어넣는다.
+	
+	ms.find(var); // 멀티셋 안에 변수 var에 해당하는 값이 있는지 찾는다.
+	
+	ms.count(var); // 원소 var의 갯수를 카운트한다.
+	
+	ms.lower_bound(var); // 원소 var가 시작하는 구간의 전 반복자를 반환한다. (50을 찾으면 그 전 반복자)
+	
+	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (이건 그럼 50 )
 
 
 	return 0;
