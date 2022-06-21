@@ -91,6 +91,8 @@ int main() {
 	
 	ms.insert(var); // 변수 var에 있는 값을 멀티셋에 집어넣는다.
 	
+	ms.erase(iter); // 해당되는 반복자의 원소를 지운다.
+	
 	ms.find(var); // 멀티셋 안에 변수 var에 해당하는 값이 있는지 찾는다.
 	
 	ms.count(var); // 원소 var의 갯수를 카운트한다.
