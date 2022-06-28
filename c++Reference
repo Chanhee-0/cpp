@@ -3,6 +3,7 @@
 #include<list>
 #include<vector>
 #include<array>
+#include<deque>
 #include<queue>
 #include<set>
 #include<map>
@@ -74,9 +75,11 @@ int main() {
 
 	array <int, 50> arr;
 
+	deque<int> dq;
+	
+	
 
-
-	priority_queue<int> q; // priority_queue를 선언한다. 내림차순
+	priority_queue<int> pq; // priority_queue를 선언한다. 내림차순
 
 	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue를 선언한다. 오름차순
 	
