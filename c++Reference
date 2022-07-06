@@ -17,6 +17,7 @@ int main() {
 	
 	int var = 0;
 
+
 	string s; // string을 선언한다.
 
 	s = "hello"; // string을 초기화한다.
@@ -25,10 +26,13 @@ int main() {
 
 	s.assign("hello"); // string을 초기화한다.
 	
-	s.find('.'); // string에서 1의 인덱스를 리턴한다.
+	s.find('.'); // '.'이 있다면 string에서 1의 인덱스를 리턴한다.
+	
 	s.find(s.begin(), s.end(), '1'); // string에서 1의 인덱스를 리턴한다.
 	
 	s.erase(0, 3); // string에서 0에서 3까지 해당하는 부분을 지운다.
+	
+	s.erase(2, 4); // string[2]부터 4개를 지운다.
 
 	s.clear(); // string 전체를 지운다.
 	
