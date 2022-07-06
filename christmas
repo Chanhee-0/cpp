@@ -1,0 +1,305 @@
+#include <iostream>
+#include <stdlib.h>
+#include <Windows.h>
+#include <conio.h>
+#include <time.h>
+#define U 72
+#define L 75
+#define R 77
+#define D 80
+#define E 13
+using namespace std;
+int tree[10][10] = { 0 }, tx = 2, ty = 2;// 초기 트리 설정을 위한 배열과 트리 좌표
+int map[10][10][10] = { 0 };// 0 : 빈칸, 1 ~ 3트리(1 : 원, 2 : 삼각형, 3 : 사각형), 4 : 눈, 5 : 눈(바로 녹음)
+int stack[10][10] = { 0 };// 눈 3단
+int str, sec;// 눈의 강도와 시간
+int i, j, k, l, m, n, o;// 반복문에 사용될 변수들
+int con = 0;// 시간을 잴 변수
+int ww = 0;
+class snow {// 북 : 1, 동 : 2, 남 : 3, 서 : 4
+public:
+	int way;// 방향을 알리는 함수
+	int fr[10][10] = { 0 };// 정면 출력하는 함수
+	int tp[10][10] = { 0 };// 상단면 출력하는 함수
+	void print();// 방향 따라 정면 출력 및 상단면 출력
+};
+
+void removecursor() // 커서 없애주는 함수
+{
+	CONSOLE_CURSOR_INFO cur;
+	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+	cur.bVisible = 0;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+}
+
+void init() {
+	cout << "눈 내림의 강도를 정하세요(1~4) : ";
+	cin >> str;
+	cout << "눈이 내리는 시간을 정하세요(초) : ";
+	cin >> sec;
+	sec = sec * 4;
+	str = 5 - str;
+}
+
+void tr() {// 트리의 위치를 지정하고 트리를 세워주는 함수
+	int input;
+	int size;// 0, 1랜덤 (0이면 높이 2, 1이면 높이 3 트리)
+	while (1) {
+		system("cls");
+		cout << endl << "화면에 보이는 것은 필드의 상단면입니다." << endl << "트리를 세울 곳을 선택하여 Enter키를 입력하시요(트리의 크기는 랜덤)" << endl << endl;
+		for (i = 0; i < 10; i++) {
+			for (j = 0; j < 10; j++) {
+				if (i == ty && j == tx)
+					cout << "■";
+				else
+					cout << "□";
+			}
+			cout << endl;
+		}
+		input = _getch();
+		if (input == 224 || input == 0) {
+			input = _getch();
+			if (input == U && ty != 2)
+				ty--;
+			else if (input == D && ty != 7)
+				ty++;
+			else if (input == L && tx != 2)
+				tx--;
+			else if (input == R && tx != 7)
+				tx++;
+		}
+		if (input == E) {
+			break;
+		}
+	}
+	size = rand() % 2;// 트리의 사이즈를 정함
+	if (size == 0) {// 트리를 1, 2, 3으로 채워줌
+		for (i = ty - 1; i < ty + 2; i++) {
+			for (j = tx - 1; j < tx + 2; j++) {
+				map[0][i][j] = rand() % 3 + 1;
+			}
+		}
+		map[1][ty][tx] = rand() % 3 + 1;
+	}
+	else {
+		for (i = ty - 2; i < ty + 3; i++) {
+			for (j = tx - 2; j < tx + 3; j++) {
+				map[0][i][j] = rand() % 3 + 1;
+			}
+		}
+		for (i = ty - 1; i < ty + 2; i++) {
+			for (j = tx - 1; j < tx + 2; j++) {
+				map[1][i][j] = rand() % 3 + 1;
+			}
+		}
+		map[2][ty][tx] = rand() % 3 + 1;
+	}
+}
+
+void fall() {// 눈내리기
+	int sx, sy;
+	snow snow1;
+	snow1.way = ww;
+	while (1) {
+		if (con % str == 0) {
+			sx = rand() % 10;
+			sy = rand() % 10;
+			map[9][sy][sx] = 4;
+			stack[sy][sx]++;
+			if (stack[sy][sx] == 3)
+				map[9][sy][sx] = 5;
+		}
+		for (i = 1; i < 10; i++) {
+			for (j = 9; j >= 0; j--) {
+				for (k = 9; k >= 0; k--) {
+					if (map[i][j][k] == 4 && map[i - 1][j][k] == 0) {
+						map[i][j][k] = 0;
+						map[i - 1][j][k] = 4;
+					}
+					else if (map[i][j][k] == 5 && map[i - 1][j][k] == 0) {
+						map[i][j][k] = 0;
+						map[i - 1][j][k] = 5;
+					}
+					else if (map[i][j][k] == 5 && map[i + 1][j][k] == 4) {
+						map[i][j][k] = 0;
+					}
+				}
+			}
+		}
+		snow1.print();
+		Sleep(250);
+		con++;
+		if (con == sec)
+			break;
+	}
+}
+
+void change() {// 화면 전환
+	int input;
+	snow snow1;
+	snow1.way = 1;
+	while (1) {
+		snow1.print();
+		if (_kbhit) {
+			input = _getch();
+			if (input == 224 || input == 0) {
+				input = _getch();
+				if (input == L)
+				{
+					if (snow1.way == 1)
+						snow1.way = 4;
+					else
+						snow1.way--;
+					snow1.print();
+				}
+				else if (input == R) {
+					if (snow1.way == 4)
+						snow1.way = 1;
+					else
+						snow1.way++;
+					snow1.print();
+				}
+			}
+			if (input == E) {
+				ww = snow1.way;
+				fall();
+			}
+		}
+	}
+}
+
+void snow :: print() {// 정면 및 상단면 프린트
+	for (l = 0; l < 10; l++) {// 배열 초기화
+		for (m = 0; m < 10; m++) {
+			fr[l][m] = 0;
+		}
+	}
+	if (way == 1) {// 북
+		for (l = 0; l < 10; l++) {
+			for (m = 0; m < 10; m++) {
+				for (n = 0; n < 10; n++) {
+					if (map[l][n][m] != 0) {
+						fr[l][m] = map[l][n][m];
+						break;
+					}	
+				}
+			}
+		}
+	}
+	else if (way == 2) {// 동
+		for (l = 0; l < 10; l++) {
+			for (m = 0; m < 10; m++) {
+				for (n = 9; n >= 0; n--) {
+					if (map[l][m][n] != 0) {
+						fr[l][m] = map[l][m][n];
+						break;
+					}
+				}
+			}
+		}
+	}
+	else if (way == 3) {// 남
+		for (l = 9; l >= 0; l--) {
+			for (m = 9; m >= 0; m--) {
+				for (n = 9; n >= 0; n--) {
+					if (map[l][n][m] != 0) {
+						fr[l][9 - m] = map[l][n][m];
+						break;
+					}
+				}
+			}
+		}
+
+	}
+	else if (way == 4) {// 서
+		for (l = 0; l < 10; l++) {
+			for (m = 9; m >= 0; m--) {
+				for (n = 0; n < 10; n++) {
+					if (map[l][m][n] != 0) {
+						fr[l][9 - m] = map[l][m][n];
+						break;
+					}
+				}
+			}
+		}
+	}
+	for (l = 0; l < 10; l++) {// 상단면
+		for (m = 0; m < 10; m++) {
+			for (n = 9; n >= 0; n--) {
+				if (map[n][l][m] != 0) {
+					tp[l][m] = map[n][l][m];
+					break;
+				}
+			}
+		}
+	}
+	system("cls");
+	if (way == 1)
+		cout << endl << "북";
+	else if (way == 2)
+		cout << endl << "동";
+	else if (way == 3)
+		cout << endl << "남";
+	else if(way == 4)
+		cout << endl << "서";
+	cout << "쪽에서 보았을때" << endl << endl;
+	for (l = 9; l >= 0; l--) {
+		for (m = 9; m >= 0; m--) {
+			if (fr[l][m] == 1) {
+				cout << "○";
+			}
+			else if (fr[l][m] == 2) {
+				cout << "△";
+			}
+			else if (fr[l][m] == 3) {
+				cout << "□";
+			}
+			else if (fr[l][m] == 4) {
+				cout << "＊";
+			}
+			else if (fr[l][m] == 5) {
+				cout << "＊";
+			}
+			else if (fr[l][m] == 0) {
+				cout << "　";
+			}
+		}
+		cout << endl;
+	}
+	cout << endl << "상단에서 보았을때" << endl << endl;
+	for (l = 0; l < 10; l++) {
+		for (m = 0; m < 10; m++) {
+			if (tp[l][m] == 1) {
+				cout << "○";
+			}
+			else if (tp[l][m] == 2) {
+				cout << "△";
+			}
+			else if (tp[l][m] == 3) {
+				cout << "□";
+			}
+			else if (tp[l][m] == 4) {
+				cout << "＊";
+			}
+			else if (fr[l][m] == 5) {
+				cout << "＊";
+			}
+			else if (tp[l][m] == 0){
+				cout << "　";
+			}
+		}
+		cout << endl;
+	}
+}
+
+int main() {
+	srand(time(NULL));
+	removecursor();
+	init();
+	snow snow1;
+	snow1.way = 1;
+	tr();
+	change();
+
+	return 0;
+}
