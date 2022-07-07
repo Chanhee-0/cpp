@@ -108,9 +108,9 @@ int main() {
 	
 	ms.count(var); // 원소 var의 갯수를 카운트한다.
 	
-	ms.lower_bound(var); // 원소 var가 시작하는 구간의 반복자를 반환한다. (var 부터)
+	ms.lower_bound(var); // 원소 var가 시작하는 구간의 반복자를 반환한다. (맨 앞의 var의 반복자) 없으면 end반복자 반환
 	
-	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (var + 1 부터 )
+	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (var의 다음 수의 반복자) 없으면 end반복자 반환
 
 
 	return 0;
