@@ -1,0 +1,590 @@
+/* 퀸 맥클러스키 법칙은 논리식을 간소화하는 법칙으로 2개의 민터엄(소영역)이 1개의 변수만 차이가난다면 
+그 변수를 제거하여 문자가 하나 작은 항으로 만드는 법칙이다. 여러 논리식들이 간소화되도록작업을 반복한다.
+ex) 0000 + 0001 = 000-, 000- + 100- = -00-
+(개발 당시 구조체 없이 배열만 사용함으로도 원하는 결과를 얻을 수 있다고 생각되어 도전해봤습니다.) */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <windows.h>
+int num = 0;//입력받은 정수의 개수
+int init[16] = { 0 };//입력받은 십진수
+int binary[16][6] = { 0 };//[항목][이진수(0~3), 십진수(4), 일의개수(5)]
+int group[20][5][2000][50] = { 0 };// [단계][1개수][항목(중복때문에 그냥 크게 잡아줌)][레벨(0), 이진수(1~4), 십진수(5~21), 오버방지(22~47), 중복인지(48), 사용했는지(49)]
+int gnum[20][7] = { 0 };// [단계][1개수]항목에 저장된 개수
+int table[33][1000] = { 0 }; // [레벨(0), 이진수(1~4), 십진수(5~20), 숫자필드(21~37), 오버방지(38~999)]
+int tnum = 0;// 테이블배열 안에 있는 주항의 개수
+int dnum = 21;// 숫자필드가 어디까지 채워졌는지 저장할 변수(숫자필드는 21부터 시작하기때문에 초기값 21)
+int epi[12][4] = { 0 };// epi 배열
+int epinum = 0;// epi의 개수
+int s = 0;
+void input()// 입력 후 정렬
+{
+	for (int i = 0; i < 16; i++)
+	{
+		int use = 0;
+		do {
+			printf("%d을 사용할것인가?(사용 : 1, 미사용 : 0) : ", i);
+			scanf_s("%d", &use);
+		} while (use > 1);
+		if (use == 1)
+		{
+			init[num] = i;
+			num++;
+		}
+	}
+}
+void bin()// 입력받은 십진수를 이진수로 변환하여 배열에 저장
+{
+	for (int i = 0; i < num; i++)
+	{
+		int j = 3;
+		binary[i][4] = init[i];// 십진수는 바이너리 배열의 마지막칸에 저장
+		if (init[i] == 1)
+			binary[i][3] = 1;
+		while (init[i] >= 2)
+		{
+			binary[i][j] = init[i] % 2;
+			j--;
+			init[i] = init[i] / 2;
+			if (init[i] == 1)
+				binary[i][j] = init[i];
+		}
+	}
+	printf("--------------------\n");
+	printf("입력 받은 수\n");
+	for (int i = 0; i < num; i++) {
+		printf("%d%d%d%d (%d)\n", binary[i][0], binary[i][1], binary[i][2], binary[i][3], binary[i][4]);
+	}
+	printf("--------------------\n");
+	printf("다음 단계로의 이동은 아무 수나 입력하시면 됩니다.\n");
+	scanf_s("%d", &s);
+}
+void gro()// 1의 개수에 따라 저장
+{
+	int one;
+	for (int i = 0; i < num; i++)
+	{
+		one = 0;
+		for (int j = 0; j < 4; j++)
+		{
+			if (binary[i][j] == 1)
+				one++;
+		}
+		binary[i][5] = one;
+	}
+	for (int i = 0; i < num; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			group[0][binary[i][5]][gnum[0][binary[i][5]]][j + 1] = binary[i][j];
+		}
+		group[0][binary[i][5]][gnum[0][binary[i][5]]][5] = binary[i][4];// 그룹의 마지막칸에 십진수 저장
+		gnum[0][binary[i][5]]++;
+	}
+	printf("--------------------\n");
+	printf("그룹화\n\n");
+	for (int m = 0; m < 5; m++)
+	{
+		printf("1이 %d개 있는 그룹안의 개수 %d개\n", m, gnum[0][m]);
+		for (int i = 0; i < gnum[0][m]; i++) {
+			printf("%d%d%d%d (%d)\n", group[0][m][i][1], group[0][m][i][2], group[0][m][i][3], group[0][m][i][4], group[0][m][i][5]);
+		}
+		printf("\n");
+	}
+	printf("--------------------\n");
+	printf("다음 단계로의 이동은 아무 수나 입력하시면 됩니다.\n");
+	scanf_s("%d", &s);
+}//클
+void com()//비교하여 pi추출
+{
+	int lev = 0;// 레벨 제곱값
+	int not = 0;// i포문을 다 돌고도 겹치는게 없을 경우 본인이 올라간다.
+	int sam = 0;// 몇개가 같은지 알아보기 위해 쓰는 변수
+	int dsam = 0;
+	int pp = 1;
+	for (int h = 0; h < 8; h += 2)
+	{
+		for (int k = 0; k < 5; k++)
+		{
+			for (int l = 0; l < gnum[h][k]; l++)
+			{
+				not= 0;
+				for (int i = 0; i < gnum[h][k + 1]; i++)
+				{
+					sam = 0;
+					for (int j = 1; j < 5; j++)
+					{
+						if ((group[h][k][l][j] == group[h][k + 1][i][j]) && (group[h][k][l][0] == group[h][k + 1][i][0]))//각 이진수가 같은지 && 레벨이 같은지
+							sam++;
+					}
+					if (sam == 3)// 저장
+					{
+						lev = pow(2, group[h][k][l][0]);// 레벨제곱
+						for (int j = 5; j < lev + 5; j++)// 십진수 저장
+						{
+							group[h + 1][k][gnum[h + 1][k]][j] = group[h][k][l][j];
+							group[h + 1][k][gnum[h + 1][k]][j + lev] = group[h][k + 1][i][j];
+						}
+						group[h][k][l][49]++;// 사용했음을 표시
+						group[h][k + 1][i][49]++;// 사용했음을 표시
+						for (int j = 1; j < 5; j++)// 이진수 저장
+						{
+							group[h + 1][k][gnum[h + 1][k]][j] = group[h][k + 1][i][j];
+							if (group[h][k][l][j] != group[h][k + 1][i][j])
+								group[h + 1][k][gnum[h + 1][k]][j] = 2;
+						}
+						group[h + 1][k][gnum[h + 1][k]][0]++;// 레벨 올려줌
+						group[h + 1][k][gnum[h + 1][k]][0] += group[h][k][l][0];// 전에 레벨 더해줌
+						gnum[h + 1][k]++;// 저장해서 개수 오름
+						not++;
+					}
+				}
+				if (not == 0)// i를 다돌고도 없으면 본인 저장
+				{
+					if (group[h][k][l][49] == 0)
+					{
+						for (int j = 0; j < 50; j++)
+							group[h + 1][k][gnum[h + 1][k]][j] = group[h][k][l][j];// 본인 저장
+						gnum[h + 1][k]++;// 레벨은 안올리고 저장 개수 올림
+					}
+				}
+			}
+		}
+		for (int k = 0; k < 5; k++)// 중복 검사
+		{
+			for (int l = 0; l < gnum[h + 1][k] - 1; l++)
+			{
+				for (int i = l + 1; i < gnum[h + 1][k]; i++)
+				{
+					for (int j = 1; j < 5; j++)
+					{
+						if (group[h + 1][k][l][j] == group[h + 1][k][i][j])// 중복검사
+						{
+							dsam++;
+						}
+					}
+					if (dsam == 4)// 다 같으면 배열에 표시
+					{
+						group[h + 1][k][i][48]++;
+					}
+					dsam = 0;
+				}
+			}
+		}
+		for (int k = 0; k < 5; k++)// 삭제
+		{
+			for (int l = 0; l < gnum[h+1][k]; l++)
+			{
+				if (group[h + 1][k][l][48] == 0)
+				{
+					for (int j = 0; j < 50; j++)
+					{
+						group[h + 2][k][gnum[h+2][k]][j] = group[h + 1][k][l][j];// 중복이 아닌것만 다음 배열로 보냄
+					}
+					gnum[h + 2][k]++;
+				}
+			}
+		}
+		if (h < 8)// 출력
+		{
+			printf("--------------------\n");
+			printf("%d차 PI 추출\n\n", pp);
+			pp++;
+			for (int k = 0; k < 5; k++)
+			{
+				printf("1이 %d개 있는 그룹안의 개수 %d개\n", k, gnum[h + 2][k]);
+				for (int l = 0; l < gnum[h + 2][k]; l++)
+				{
+					lev = group[h + 2][k][l][0];
+					if (lev == 0)
+					{
+						for (int i = 1; i < 5; i++)
+						{
+							if (group[h + 2][k][l][i] > 1)
+								printf("-");
+							else
+								printf("%d", group[h + 2][k][l][i]);
+						}
+						printf(" (%d)\n", group[h + 2][k][l][5]);
+					}
+					else if (lev == 1)
+					{
+						for (int i = 1; i < 5; i++)
+						{
+							if (group[h + 2][k][l][i] > 1)
+								printf("-");
+							else
+								printf("%d", group[h + 2][k][l][i]);
+						}
+						printf(" (%d, %d)\n", group[h + 2][k][l][5], group[h + 2][k][l][6]);
+					}
+					else if (lev == 2)
+					{
+						for (int i = 1; i < 5; i++)
+						{
+							if (group[h + 2][k][l][i] > 1)
+								printf("-");
+							else
+								printf("%d", group[h + 2][k][l][i]);
+						}
+						printf(" (%d, %d, %d, %d)\n", group[h + 2][k][l][5], group[h + 2][k][l][6], group[h + 2][k][l][7], group[h + 2][k][l][8]);
+					}
+					else if (lev == 3)
+					{
+						for (int i = 1; i < 5; i++)
+						{
+							if (group[h + 2][k][l][i] > 1)
+								printf("-");
+							else
+								printf("%d", group[h + 2][k][l][i]);
+						}
+						printf(" (%d, %d, %d, %d, %d, %d, %d, %d)\n", group[h + 2][k][l][5], group[h + 2][k][l][6], group[h + 2][k][l][7], group[h + 2][k][l][8], group[h + 2][k][l][9], group[h + 2][k][l][10], group[h + 2][k][l][11], group[h + 2][k][l][12]);
+					}
+					else if (lev == 4)
+					{
+						for (int i = 1; i < 5; i++)
+						{
+							if (group[h + 2][k][l][i] > 1)
+								printf("-");
+							else
+								printf("%d", group[h + 2][k][l][i]);
+						}
+						printf(" (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n", group[h + 2][k][l][5], group[h + 2][k][l][6], group[h + 2][k][l][7], group[h + 2][k][l][8], group[h + 2][k][l][9], group[h + 2][k][l][10], group[h + 2][k][l][11], group[h + 2][k][l][12], group[h + 2][k][l][13], group[h + 2][k][l][14], group[h + 2][k][l][15], group[h + 2][k][l][16], group[h + 2][k][l][17], group[h + 2][k][l][18], group[h + 2][k][l][19], group[h + 2][k][l][20]);
+					}
+				}
+				printf("\n");
+			}
+			printf("--------------------\n");
+			printf("다음 단계로의 이동은 아무 수나 입력하시면 됩니다.\n");
+			scanf_s("%d", &s);
+		}
+	}
+}// 클
+void tab()// 표입력 후 epi추출
+{
+	int lev;// 레벨을 입력받을 변수
+	//int dnum = 21;// 숫자필드가 어디까지 채워졌는지 저장할 변수(숫자필드는 21부터 시작하기때문에 초기값 21)
+	int box;
+	int o = 5;
+	int x[38] = { 0 };// 세로 하나만 있는곳 찾기위해 사용하는 저장 변수
+	int y[33] = { 0 };// 가로 1만있는곳 찾기위해 사용하는 저장 변수
+	for (int k = 0; k < 5; k++)// table세로줄에 레벨, 이진수, 십진수, 입력 tnum에 주항 개수 입력
+	{
+		for (int i = 0; i < gnum[8][k]; i++)
+		{
+			tnum++;
+			for (int j = 0; j < 22; j++)
+			{
+				table[tnum][j] = group[8][k][i][j];
+			}
+		}
+	}
+	for (int i = 1; i < tnum + 1; i++)// 입력된 줄의 레벨을 검사하여 숫자필드에 십진수 입력
+	{
+		lev = pow(2, table[i][0]);
+		o = 5;
+		for (int j = dnum; j < dnum + lev; j++)
+		{
+			table[0][j] = table[i][o];
+			o++;
+		}
+		dnum += lev;
+	}
+	for (int i = 21; i < dnum - 1; i++)// 숫자필드 중복 제거
+	{
+		for (int j = i + 1; j < dnum; j++)
+		{
+			if (table[0][i] == table[0][j])
+			{
+				for (int k = j; k < dnum - 1; k++)
+				{
+					table[0][k] = table[0][k + 1];
+					table[0][k + 1] = 0;
+				}
+				dnum--;
+			}
+		}
+	}
+	for (int i = dnum; i < 38; i++)
+	{
+		table[0][i] = 0;
+	}
+	for (int i = 21; i < dnum; i++)// 숫자 필드 정렬
+	{
+		for (int j = i; j < dnum - 1; j++)
+		{
+			if (table[0][j] > table[0][j + 1])
+			{
+				box = table[0][j];
+				table[0][j] = table[0][j + 1];
+				table[0][j + 1] = box;
+			}
+		}
+	}
+	for (int i = 1; i < tnum + 1; i++)// 공통 1로 변환
+	{
+		lev = pow(2, table[i][0]);
+		for (int k = 5; k < lev + 5; k++)
+		{
+			for (int j = 21; j < dnum; j++)
+			{
+				if (table[i][k] == table[0][j])
+				{
+					table[i][j] = 1;
+				}
+			}
+		}
+	}
+	printf("--------------------\n");// 표 출력
+	for (int j = 21; j < dnum; j++)
+	{
+		if(table[0][j]>9)
+			printf(" %d", table[0][j]);
+		else
+			printf("  %d", table[0][j]);
+	}
+	for (int i = 0; i < tnum+1; i++)
+	{
+		for (int j = 21; j < dnum; j++)
+		{
+			if (table[i][j] == 0)
+				printf("   ");
+			else if (table[i][j] == 1 && i > 0)
+				printf("  o");
+		}
+		if (i > 0)
+		{
+			printf(" -> ");
+			for (int j = 1; j < 5; j++)
+			{
+				if (table[i][j] > 1)
+					printf("-");
+				else
+					printf("%d", table[i][j]);
+			}
+			if (table[i][0] == 0)
+			{
+				printf(" (%d)", table[i][5]);
+			}
+			else if (table[i][0] == 1)
+			{
+				printf(" (%d, %d)", table[i][5], table[i][6]);
+			}
+			else if (table[i][0] == 2)
+			{
+				printf(" (%d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8]);
+			}
+			else if (table[i][0] == 3)
+			{
+				printf(" (%d, %d, %d, %d, %d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8], table[i][9], table[i][10], table[i][11], table[i][12]);
+			}
+			else if (table[i][0] == 4)
+			{
+				printf(" (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8], table[i][9], table[i][10], table[i][11], table[i][12], table[i][13], table[i][14], table[i][15], table[i][16], table[i][17], table[i][18], table[i][19], table[i][20]);
+			}
+		}
+		printf("\n");
+	}
+	printf("--------------------\n");
+	printf("다음 단계로의 이동은 아무 수나 입력하시면 됩니다.\n");
+	scanf_s("%d", &s);
+	for (int i = 21; i < dnum; i++)// 세로줄 더해서 하나만 있는곳 찾기 -> epi
+	{
+		for (int j = 1; j < tnum + 1; j++)
+		{
+			if (table[j][i] != 0)
+			{
+				x[i]++;
+			}
+		}
+	}
+	for (int i = 21; i < dnum; i++)// epi확정된곳 가로 2로 바꿔주기
+	{
+		if (x[i] == 1)
+		{
+			for (int j = 1; j < tnum + 1; j++)
+			{
+				if (table[j][i] == 1)
+				{
+					for (int l = 0; l < 4; l++)// epi배열에 이진수 옮겨 등록
+					{
+						epi[epinum][l] = table[j][l + 1];
+					}
+					epinum++;
+					//printf("epinum : %d\n",epinum);
+					for (int k = 21; k < dnum; k++)// 가로 전부 2로 바꿔준다.
+					{
+						if (table[j][k] != 0)
+						{
+							table[j][k] = 2;
+							table[j][i] = 1;// 본인은 1로 놔둠
+						}
+					}
+				}
+			}
+		}
+	}
+	for (int i = 21; i < dnum; i++)// 가로 2인곳 세로도 2로 바꿔주기
+	{
+		for (int j = 1; j < tnum + 1; j++)
+		{
+			if (table[j][i] == 2)
+			{
+				for (int k = 1; k < tnum + 1; k++)
+				{
+					if (table[k][i] != 0)
+					{
+						table[k][i] = 2;
+					}
+				}
+			}
+		}
+	}
+	printf("--------------------\n");// 표 출력
+	for (int j = 21; j < dnum; j++)
+	{
+		if (table[0][j] > 9)
+			printf(" %d", table[0][j]);
+		else
+			printf("  %d", table[0][j]);
+	}
+	for (int i = 0; i < tnum + 1; i++)
+	{
+		for (int j = 21; j < dnum; j++)
+		{
+			if (table[i][j] == 0)
+				printf("   ");
+			else if (table[i][j] == 1 && i > 0)
+				printf("  o");
+			else if (table[i][j] == 2 && i > 0)
+				printf("  x");
+		}
+		if (i > 0)
+		{
+			printf(" -> ");
+			for (int j = 1; j < 5; j++)
+			{
+				if (table[i][j] > 1)
+					printf("-");
+				else
+					printf("%d", table[i][j]);
+			}
+			if (table[i][0] == 0)
+			{
+				printf(" (%d)", table[i][5]);
+			}
+			else if (table[i][0] == 1)
+			{
+				printf(" (%d, %d)", table[i][5], table[i][6]);
+			}
+			else if (table[i][0] == 2)
+			{
+				printf(" (%d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8]);
+			}
+			else if (table[i][0] == 3)
+			{
+				printf(" (%d, %d, %d, %d, %d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8], table[i][9], table[i][10], table[i][11], table[i][12]);
+			}
+			else if (table[i][0] == 4)
+			{
+				printf(" (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", table[i][5], table[i][6], table[i][7], table[i][8], table[i][9], table[i][10], table[i][11], table[i][12], table[i][13], table[i][14], table[i][15], table[i][16], table[i][17], table[i][18], table[i][19], table[i][20]);
+			}
+		}
+		printf("\n");
+	}
+	printf("--------------------\n");
+	printf("다음 단계로의 이동은 아무 수나 입력하시면 됩니다.\n");
+	scanf_s("%d", &s);
+	for (int i = 1; i < tnum + 1; i++)// 가로 1만있는곳 epi에 등록
+	{
+		for (int j = 21; j < dnum; j++)
+		{
+			if (table[i][j] == 1)
+			{
+				y[i]++;// 가로 1만있는 pi의 좌표저장
+			}
+		}
+	}
+	for (int i = 1; i < tnum + 1; i++)
+	{
+		lev = pow(2, table[i][0]);
+		if (lev == y[i])
+		{
+			for (int l = 0; l < 4; l++)// epi배열에 이진수 옮겨 등록
+			{
+				epi[epinum][l] = table[i][l + 1];
+			}
+			epinum++;
+		}
+	}
+}
+void print()// 추출한 epi를 식으로 출력
+{
+	printf("F = ");
+	for (int i = 0; i < epinum; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (j == 0)
+			{
+				if (epi[i][j] == 1)
+				{
+					printf("a");
+				}
+				else if (epi[i][j] == 0)
+				{
+					printf("a'");
+				}
+			}
+			if (j == 1)
+			{
+				if (epi[i][j] == 1)
+				{
+					printf("b");
+				}
+				else if (epi[i][j] == 0)
+				{
+					printf("b'");
+				}
+			}
+			if (j == 2)
+			{
+				if (epi[i][j] == 1)
+				{
+					printf("c");
+				}
+				else if (epi[i][j] == 0)
+				{
+					printf("c'");
+				}
+			}
+			if (j == 3)
+			{
+				if (epi[i][j] == 1)
+				{
+					printf("d");
+				}
+				else if (epi[i][j] == 0)
+				{
+					printf("d'");
+				}
+			}
+		}
+		if (i != epinum - 1)
+		{
+			printf(" + ");
+		}
+	}
+	printf("\n");
+}
+int main()// 수의 입력
+{
+	input();
+	bin();
+	gro();
+	com();
+	tab();
+	print();
+	system("pause");
+}
