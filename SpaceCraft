@@ -1,0 +1,547 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <process.h>
+#include <time.h>
+#include <conio.h>
+#include <windows.h>
+#define U 72
+#define L 75
+#define R 77
+#define D 80
+#define S 32
+#define E 13
+int map[10][10] = { 0 };// 0 : 맵, 1 : 유저, 2 : 적, 3 : 미사일
+int i, j, k, l, m;// 반복문 함수
+int stst = 0;// 0 : 메인메뉴, 1 : 게임시작, 2 : 게임계속, 4 : 승리, 5 : 패배(1입력 받으면 전부 초기화하고 시작)
+int m_x = 0, m_y = 0, e1_x = 0, e1_y = 0, e2_x = 0, e2_y = 0, mm_x = 0, mm_y = 0, e1m_x = 0, e1m_y = 0, e2m_x = 0, e2m_y = 0;// 각 좌표
+int myli = 0, enli1 = 0, enli2 = 0;// 목숨상태를 알리는 함수(2일때는 두개출력 1일때는 한개 0일때는종료)
+int input;// 키입력
+int limit = 1;// while
+int e1way = 0, e2way = 0, e1si = 0, e2si = 0;// 적기가 움직이는 방향과 원크기의 패턴을 정하는 함수
+int e1rspa[8] = { 7,0,8,1,7,2,6,1 }, e1rbpa[16] = { 7,0,8,0,9,1,9,2,8,3,7,3,6,2,6,1 }, e1lspa[8] = { 5,0,4,1,5,2,6,1 }, e1lbpa[16] = { 5,0,4,0,3,1,3,2,4,3,5,3,6,2,6,1 };// 적1 패턴
+int e2rspa[8] = { 4,0,5,1,4,2,3,1 }, e2rbpa[16] = { 4,0,5,0,6,1,6,2,5,3,4,3,3,2,3,1 }, e2lspa[8] = { 2,0,1,1,2,2,3,1 }, e2lbpa[16] = { 2,0,1,0,0,1,0,2,1,3,2,3,3,2,3,1 };// 적2 패턴
+int miss = 0, e1miss = 0, e2miss = 0;
+HANDLE hMutex;
+void gotoxy(int x, int y) {
+	COORD Cur;
+	Cur.X = x * 2;
+	Cur.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+}
+int removecursor() {// 커서 깜빡임을 없애주는 함수
+	CONSOLE_CURSOR_INFO cur;
+	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+	cur.bVisible = 0;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+}
+unsigned __stdcall enemy1(void* arg) {// 첫번째 적기
+	while (1) {
+		if (stst == 1 || stst == 2) {
+			e1way = rand() % 2;
+			e1si = rand() % 2;
+			if (e1way == 0) {
+				if (e1si == 0) {
+					for (l = 0; l < 8; l += 2) {// e1rspa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli1 == 2) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1rspa[l];
+							e1_y = e1rspa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+							gotoxy(e1_x, e1_y + 1); printf("☆");
+						}
+						else if (enli1 == 1) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1rspa[l];
+							e1_y = e1rspa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e1_x - 1 <= m_x <= e1_x + 1) {// 미사일 조건
+							e1m_x = e1_x;
+							e1m_y = e1_y + 2;
+							e1miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+				else {
+					for (l = 0; l < 16; l += 2) {// e1rbpa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli1 == 2) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1rbpa[l];
+							e1_y = e1rbpa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+							gotoxy(e1_x, e1_y + 1); printf("☆");
+						}
+						else if (enli1 == 1) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1rbpa[l];
+							e1_y = e1rbpa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e1_x - 1 <= m_x <= e1_x + 1) {// 미사일 조건
+							e1m_x = e1_x;
+							e1m_y = e1_y + 2;
+							e1miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+			}
+			else {
+				if (e1si == 0) {
+					for (l = 0; l < 8; l += 2) {// e1lspa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli1 == 2) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1lspa[l];
+							e1_y = e1lspa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+							gotoxy(e1_x, e1_y + 1); printf("☆");
+						}
+						else if (enli1 == 1) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1lspa[l];
+							e1_y = e1lspa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e1_x - 1 <= m_x <= e1_x + 1) {// 미사일 조건
+							e1m_x = e1_x;
+							e1m_y = e1_y + 2;
+							e1miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+				else {
+					for (l = 0; l < 16; l += 2) {// e1lbpa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli1 == 2) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1lbpa[l];
+							e1_y = e1lbpa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+							gotoxy(e1_x, e1_y + 1); printf("☆");
+						}
+						else if (enli1 == 1) {
+							gotoxy(e1_x, e1_y); printf("　");
+							gotoxy(e1_x, e1_y + 1); printf("　");
+							e1_x = e1lbpa[l];
+							e1_y = e1lbpa[l + 1];
+							gotoxy(e1_x, e1_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0)|| myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e1_x - 1 <= m_x <= e1_x + 1) {// 미사일 조건
+							e1m_x = e1_x;
+							e1m_y = e1_y + 2;
+							e1miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+			}
+		}
+	}
+}
+unsigned __stdcall enemy2(void* arg) {// 두번째 적기
+	while (1) {
+		/*
+		if (stst == 1 || stst == 2) {
+			if (stst == 1) {
+				// 적기2 좌표설정도 같이해주기
+				while (limit) {
+					Sleep(2000);
+					WaitForSingleObject(hMutex, INFINITE);
+					enli2 = 2; // 두번째 적기 출현을 알림
+					e2_x = 3;
+					e2_y = 1;
+					gotoxy(e2_x, e2_y); printf("☆");
+					gotoxy(e2_x, e2_y + 1); printf("☆");
+					limit = 0;
+					ReleaseMutex(hMutex);
+				}
+
+			}
+			e2way = rand() % 2;
+			e2si = rand() % 2;
+			if (e2way == 0) {
+				if (e2si == 0) {
+					for (n = 0; n < 8; n += 2) {// e2rspa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli2 == 2) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e2rspa[n];
+							e2_y = e2rspa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+							gotoxy(e2_x, e2_y + 1); printf("☆");
+						}
+						else if (enli2 == 1) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e2rspa[n];
+							e2_y = e2rspa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+						}
+						else if ((enl1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e2_x - 2 <= m_x <= e2_x + 1) {// 미사일 조건
+							e2m_x = e2_x;
+							e2m_y = e2_y + 2;
+							e2miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+				else {
+					for (n = 0; n < 16; n += 2) {// e2rbpa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli2 == 2) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e1rbpa[n];
+							e2_y = e1rbpa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+							gotoxy(e2_x, e2_y + 1); printf("☆");
+						}
+						else if (enli2 == 1) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e1rbpa[n];
+							e2_y = e1rbpa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e2_x - 1 <= m_x <= e2_x + 1) {// 미사일 조건
+							e2m_x = e2_x;
+							e2m_y = e2_y + 2;
+							e2miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+			}
+			else {
+				if (e1si == 0) {
+					for (n = 0; n < 8; n += 2) {// e2lspa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli2 == 2) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e2lspa[n];
+							e2_y = e1lspa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+							gotoxy(e2_x, e2_y + 1); printf("☆");
+						}
+						else if (enli2 == 1) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e2lspa[n];
+							e2_y = e2lspa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0) || myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e2_x - 2 <= m_x <= e2_x + 1) {// 미사일 조건
+							e2m_x = e2_x;
+							e2m_y = e2_y + 2;
+							e2miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+				else {
+					for (n = 0; n < 16; n += 2) {// e2lbpa
+						Sleep(200);
+						WaitForSingleObject(hMutex, INFINITE);
+						if (enli2 == 2) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e2lbpa[n];
+							e2_y = e1lbpa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+							gotoxy(e2_x, e2_y + 1); printf("☆");
+						}
+						else if (enli2 == 1) {
+							gotoxy(e2_x, e2_y); printf("　");
+							gotoxy(e2_x, e2_y + 1); printf("　");
+							e2_x = e1lbpa[n];
+							e2_y = e1lbpa[n + 1];
+							gotoxy(e2_x, e2_y); printf("☆");
+						}
+						else if ((enli1 == 0 && enli2 == 0)|| myli == 0) {
+							stst = 0;
+							st();
+						}
+						if (e2_x - 1 <= m_x <= e2_x + 1) {// 미사일 조건
+							e2m_x = e2_x;
+							e2m_y = e2_y + 2;
+							e2miss = 1;
+						}
+						if (stst == 0)
+							break;
+						ReleaseMutex(hMutex);
+					}
+				}
+			}
+		}
+		*/
+	}
+}
+unsigned __stdcall missile(void* arg) {// 미사일
+	while (1) {
+		//WaitForSingleObject(hMutex, INFINITE);
+		if (stst == 1 || stst == 2) {
+			if (miss == 1) {// 미사일 발사
+				for (k = mm_y; k >= 0; k--)
+				{
+					//WaitForSingleObject(hMutex, INFINITE);
+					if (enli1 == 2) {
+						if (mm_x == e1_x && k == e1_y + 1) {// 적기1의 생명이 2일때 격추
+							enli1--;
+							break;
+						}
+					}
+					else if (enli1 == 1) {
+						if (mm_x == e1_x && k == e1_y) {// 적기1의 생명이 1일때 격추
+							enli1--;
+							break;
+						}
+					}
+					if (enli2 == 2) {
+						if (mm_x == e2_x && k == e2_y + 1) {// 적기2의 생명이 2일때 격추
+							enli2--;
+							break;
+						}
+					}
+					else if (enli2 == 1) {
+						if (mm_x == e2_x && k == e2_y) {// 적기2의 생명이 1일때 격추
+							enli2--;
+							break;
+						}
+					}
+					if ((mm_x == e1m_x && k == e1m_y) || (mm_x == e2m_x && k == e2m_y)) {// 미사일끼리 만났을때
+						break;
+					}
+					gotoxy(mm_x, k); printf("↑");
+					//ReleaseMutex(hMutex);
+					Sleep(100);
+					//WaitForSingleObject(hMutex, INFINITE);
+					gotoxy(mm_x, k); printf("　");
+					//ReleaseMutex(hMutex);
+				}
+				//WaitForSingleObject(hMutex, INFINITE);
+				miss = 0;
+				//ReleaseMutex(hMutex);
+			}
+		}
+		//ReleaseMutex(hMutex);
+	}
+}
+unsigned __stdcall move(void* arg) {// 아군기 이동
+	while (1) {
+		WaitForSingleObject(hMutex, INFINITE);
+		if (_kbhit()) {
+			input = _getch();
+			if (input == 224 || input == 0) {
+				input = _getch();
+				gotoxy(m_x, m_y); printf("　"); // 현재 위치 지우기
+				gotoxy(m_x, m_y - 1); printf("　");
+				if (input == U && m_y != 6)
+					m_y--;
+				else if (input == D && m_y != 9)
+					m_y++;
+				else if (input == L && m_x != 0)
+					m_x--;
+				else if (input == R && m_x != 9)
+					m_x++;
+				if (myli == 2) {
+					gotoxy(m_x, m_y); printf("★"); // 현재 위치 그리기
+					gotoxy(m_x, m_y - 1); printf("★");
+				}
+				else if (myli == 1) {
+					gotoxy(m_x, m_y); printf("★");
+				}
+			}
+			if (input == E) {
+				stst = 0;
+				st();
+			}
+			else if (input == S) {
+				mm_x = m_x;
+				mm_y = m_y - 2;
+				miss = 1;
+			}
+		}
+		ReleaseMutex(hMutex);
+	}
+}
+unsigned __stdcall e1missile(void* arg) {// 적군1 미사일
+	while (1) {
+		//WaitForSingleObject(hMutex, INFINITE);
+		if (stst == 1 || stst == 2) {
+			if (e1miss == 1) {// 미사일 발사
+				for (m = e1m_y; m < 10; m++)
+				{
+					//WaitForSingleObject(hMutex, INFINITE);
+					e1miss = 0;
+					if (myli == 2) {
+						if (e1m_x == m_x && m == m_y - 1) {// 플레이어의 생명이 2일때 격추
+							myli--;
+							break;
+						}
+					}
+					else if (myli == 1) {
+						if (e1m_x == m_x && m == m_y) {// 플레이어의 생명이 1일때 격추
+							myli--;
+							break;
+						}
+					}
+					if (mm_x == e1m_x && m == e1m_y) {// 미사일끼리 만났을때
+						break;
+					}
+					if (myli == 0) {
+						stst = 0;
+						st();
+					}
+					gotoxy(e1m_x, m); printf("↓");
+					//ReleaseMutex(hMutex);
+					Sleep(100);
+					gotoxy(e1m_x, m); printf("　");
+				}
+			}
+		}
+		//ReleaseMutex(hMutex);
+		
+	}
+}
+unsigned __stdcall e2missile(void* arg) {// 적군 2 미사일
+}
+int st() { // 특정키를 입력받았을때 stst를 0으로 바꾸고 st(); 선언
+	if (stst == 0) {
+		system("cls");
+		printf("게임시작(1), 불러오기(2), 게임종료(3)\n원하시는 메뉴를 입력해주십시오.\n");
+		scanf_s("%d", &stst);
+		system("cls");
+		if (stst == 1)// 게임시작일경우 한번 초기화하고 시작
+			init();
+		print();
+		if (stst == 1) {
+			gotoxy(m_x, m_y); printf("★"); // 유저 및 적 출현
+			gotoxy(m_x, m_y - 1); printf("★");
+			gotoxy(e1_x, e1_y); printf("☆");
+			gotoxy(e1_x, e1_y + 1); printf("☆");
+		}
+		if (stst == 2) {
+			if (myli == 2) {
+				gotoxy(m_x, m_y); printf("★");
+				gotoxy(m_x, m_y - 1); printf("★");
+			}
+			else if (myli == 1) {
+				gotoxy(m_x, m_y); printf("★");
+			}
+			if (enli1 == 2) {
+				gotoxy(e1_x, e1_y); printf("☆");
+				gotoxy(e1_x, e1_y + 1); printf("☆");
+			}
+			else if (enli1 == 1) {
+				gotoxy(e1_x, e1_y); printf("☆");
+			}
+			if (enli2 == 2) {
+				gotoxy(e2_x, e2_y); printf("☆");
+				gotoxy(e2_x, e2_y + 1); printf("☆");
+			}
+			else if (enli2 == 1) {
+				gotoxy(e2_x, e2_y); printf("☆");
+			}
+		}
+	}
+}
+int print() {// 맵출력
+	if (stst == 1 || stst == 2) {
+		system("cls");
+		for (i = 0; i < 10; i++) {
+			for (j = 0; j < 10; j++) {
+				if (map[i][j] == 0)
+					printf("　");
+			}
+			printf("\n");
+		}
+		printf("10초 후 두번째 적기 출현\nenter를 입력하시면 저장후 메인메뉴로 이동합니다.\n");
+	}
+}
+int init() {// 아군기와 적기 원래자리 목숨
+	m_x = 4;
+	m_y = 8;
+	e1_x = 6;
+	e1_y = 1;
+	myli = 2;
+	enli1 = 2;
+	limit = 1;
+}
+int main() {
+	srand(time(NULL));
+	removecursor();
+	unsigned long hThread[6];
+	unsigned ThreadId1, ThreadId2, ThreadId3, ThreadId4, ThreadId5, ThreadId6;
+	hMutex = CreateMutex(NULL, FALSE, NULL);
+	hThread[0] = _beginthreadex(NULL, 0, enemy1, NULL, 0, &ThreadId1);
+	hThread[1] = _beginthreadex(NULL, 0, enemy2, NULL, 0, &ThreadId2);
+	hThread[2] = _beginthreadex(NULL, 0, missile, NULL, 0, &ThreadId3);
+	hThread[3] = _beginthreadex(NULL, 0, move, NULL, 0, &ThreadId4);
+	hThread[4] = _beginthreadex(NULL, 0, e1missile, NULL, 0, &ThreadId5);
+	hThread[5] = _beginthreadex(NULL, 0, e2missile, NULL, 0, &ThreadId6);
+	st();
+	WaitForMultipleObjects(6, hThread, TRUE, INFINITE);
+} // goto문이 커서의 위치를 바꾸면서 다른 이상한것들이 나왔었음
