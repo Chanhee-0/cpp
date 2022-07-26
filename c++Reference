@@ -16,7 +16,7 @@ int main() {
 	cout.tie(NULL);
 	
 	vector<int, int> v;
-	v.push_back(make_pair(s, t));
+	v.push_back(make_pair(s, t)); -> 멀티맵은 되는데 멀티셋은 왜 안됨..
 	
 	int var = 0;
 
