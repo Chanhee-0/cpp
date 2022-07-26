@@ -103,6 +103,8 @@ int main() {
 	
 	multiset<int> ms; // 멀티셋 ms를 선언한다. 오름차순
 	
+	multiset<int, greater<int>> ms; // 멀티셋 ms를 선언한다. 내림차순
+	
 	set<int>::iterator iter; // multiset의 iter선언 iter을 통해 multiset의 반복자를 반환해 순환 할 때 사용한다.
 	
 	ms.insert(var); // 변수 var에 있는 값을 멀티셋에 집어넣는다.
