@@ -15,6 +15,9 @@ int main() {
 	cin.tie(NULL);
 	cout.tie(NULL);
 	
+	vector<int, int> v;
+	v.push_back(make_pair(s, t));
+	
 	int var = 0;
 
 
