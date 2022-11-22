@@ -82,7 +82,7 @@ int main() {
 	
 	v.size(); // vector의 사이즈를 반환한다.
 	
-	v.assign(3, 2); // 3개의 2로 할당한다.
+	v.assign(3, 2); // 3개의 2를 할당한다.
 	
 	v.assign(s.begin(), s.end()); // 컨테이너 s의 전 범위를 할당한다.
 	
