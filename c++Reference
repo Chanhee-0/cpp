@@ -150,6 +150,10 @@ int main() {
 	
 	min_element(v.begin(), v.end()); // 배열 내의 가장 작은 원소를 반환한다.
 	
+	find(v.begin(), v.end(), num); // 배열 안에 num의 위치를 반환해준다. 없을 경우 v.end()를 반환한다.
+	
+	find_if(v.begin(), v.end(), func); // 배열안에 찾는 조건에 맞는 숫자의 위 반환해준다. bool func함수로 따로 return해준다.
+	
 	count(v.begin(), v.end(), num); // 배열 안에 num이 몇개 있는지 반환해준다.
 	
 	count_if(v.begin(), v.end(), func); // 배열안에 찾는 조건에 맞는 숫자가 몇개있는지 반환해준다. bool func함수로 따로 return해준다.
