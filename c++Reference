@@ -167,6 +167,12 @@ int main() {
 	
 	lcm(n,m); // n과 m의 최대 공약수를 반환한다.
 	
+	#include <cctype>
+	
+	isdigit(num); // num이 숫자면 1 아니면 0을 반환한다.
+	
+	isalpha(ch); // ch가 대문자면 1 소문자면 2 알파벳이 아니면 0을 반환한다.
+	
 	
 	#include <regex> // 정규식 공부를 따로 해보는게 좋겠다.
 	
