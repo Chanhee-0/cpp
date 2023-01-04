@@ -1,14 +1,14 @@
-#include<iostream>
-#include<string>
-#include<list>
-#include<vector>
-#include<array>
-#include<deque>
-#include<queue>
-#include<set>
-#include<map>
-#include<stack>
-#include<algorithm>
+#include <iostream>
+#include <string>
+#include <list>
+#include <vector>
+#include <array>
+#include <deque>
+#include <queue>
+#include <set>
+#include <map>
+#include <stack>
+#include <algorithm>
 
 using namespace std;
 
@@ -117,7 +117,7 @@ int main() {
 	swqp(st1, st2); // 두 스택의 원소를 교환한다.
 	
 
-	array <int, 50> arr;
+	array<int, 50> arr;
 
 	deque<int> dq;
 	
@@ -157,14 +157,14 @@ int main() {
 	ms.upper_bound(var); // 원소 var가 끝나는 구간의 반복자를 반환한다. (var의 다음 수의 반복자) 없으면 end반복자 반환
 	
 	
-	#include<cmath>
+	#include <cmath>
 	
 	var = pow(3, 2); // 3의 2제곱을 구한다.
 	
 	var = sqrt(4); // 4의 제곱근을 구한다.
 	
 	
-	#include<algorithm>
+	#include <algorithm>
 	
 	max(n, m); // n과 m을 비교해 더 큰 값을 반환한다.
 	
@@ -187,9 +187,9 @@ int main() {
 	
 	accumulate(v.begin(), v.end(), 0); // (,,합 전의 초깃값) 모든 원소의 합을 반환한다. 문자도 가능
 
-	gcd(n,m); // n과 m의 최소 공배수를 반환한다.
+	gcd(n,m); // n과 m의 최대 공약수를 반환한다.
 	
-	lcm(n,m); // n과 m의 최대 공약수를 반환한다.
+	lcm(n,m); // n과 m의 최소 공배수를 반환한다.
 	
 	inner_product(v1.begin(), v1.end(), v2.begin(), 0); // 두 배열의 같은 위치의 값을 곱해 더한 총값을 반환한다.
 	
