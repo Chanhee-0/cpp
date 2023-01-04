@@ -7,6 +7,7 @@
 #include<queue>
 #include<set>
 #include<map>
+#include<stack>
 #include<algorithm>
 
 using namespace std;
@@ -101,6 +102,19 @@ int main() {
 	sort(v.begin(), v.end()); // vector 내부의 원소들을 오름차순으로 정리한다.
 	
 	sort(v.rbegin(), v.rend()); // vector의 내부에 기능인 rbegin()을 이용하여 원소들을 내림차순으로 정리한다.
+	
+	
+	stack<int> st;
+	
+	st.push(var); // stack에 원소를 집어넣는다.
+	
+	st.pop(); // stack의 최상위 원소를 삭제한다.
+	
+	st.size(); // stack의 사이즈를 반환한다.
+	
+	st.empty(); // stack의 사이즈가 0이면 true를 반환한다.
+	
+	swqp(st1, st2); // 두 스택의 원소를 교환한다.
 	
 
 	array <int, 50> arr;
