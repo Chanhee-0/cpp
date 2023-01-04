@@ -59,6 +59,12 @@ int main() {
 	toupper(s[i]); // 문자가 소문자인 경우 대문자로 바꿔준다. 아닐경우 그대로 반환
 	
 	tolower(s[i]); // 문자가 대문자인 경우 소문자로 바꿔준다. 아닐경우 그대로 반환
+	
+	s.substr(0, 2); // 0에서 2개만큼 자른다.
+	
+	s.substr(2); // 2부터 마지막까지 반환
+	
+	s.substr(s.size() - 2); // 뒤에서 부터 2개 반환.
 
 
 	list<int> l; // list를 선언한다.
@@ -179,6 +185,19 @@ int main() {
 	isdigit(num); // num이 숫자면 1 아니면 0을 반환한다.
 	
 	isalpha(ch); // ch가 대문자면 1 소문자면 2 알파벳이 아니면 0을 반환한다. c++에서는 문자일경우 1024 아닐경우 그대로 반환
+	
+	
+	#include <sstream>
+	
+	stringstream ss; // stringstream ss선언
+
+	ss.str(""); // ss 초기화
+	
+	ss.str(s); // ss을 s로 초기화
+	
+	ss >> var; // ss에 있는 숫자를 공백이나 숫자가 아닌 부분까지 int형 변수 var로 가져온다.
+	
+	ss >> s; // ss에 있는 문자를 공백이나 문자가 아닌 부분까지 변수 s로 가져온다.
 	
 	
 	#include <regex> // 정규식 공부를 따로 해보는게 좋겠다.
