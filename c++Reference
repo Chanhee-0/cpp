@@ -105,10 +105,6 @@ int main() {
 	
 	v.unique(s.begin(), s.end()); // 중복을 뒤로 보낸다. 정렬 후 사용해야함.
 	
-	sort(v.begin(), v.end()); // vector 내부의 원소들을 오름차순으로 정리한다.
-	
-	sort(v.rbegin(), v.rend()); // vector의 내부에 기능인 rbegin()을 이용하여 원소들을 내림차순으로 정리한다.
-	
 	
 	stack<int> st;
 	
@@ -171,6 +167,10 @@ int main() {
 	
 	
 	#include <algorithm>
+	
+	sort(v.begin(), v.end()); // 배열 내부의 원소들을 오름차순으로 정리한다.
+	
+	sort(v.rbegin(), v.rend()); // vector의 경우 내부에 기능인 rbegin()을 이용하여 원소들을 내림차순으로 정리할 수 다.
 	
 	max(n, m); // n과 m을 비교해 더 큰 값을 반환한다.
 	
