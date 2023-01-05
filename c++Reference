@@ -86,6 +86,12 @@ int main() {
 	
 
 	vector<int> v;
+	
+	vector<int> v(5); // 크기 5의 벡터 배열을 만들어 0으로 채운다.
+	
+	vector<int> v(5, 1); // 크기 5의 백터 배열을 만들어 1로 채운다.
+	
+	vector<int> v = {1, 2}; // 벡터에 해당 원소를 채운다.
 
 	v.push_back(var); // vector의 끝에 변수 var값을 원소로 집어넣는다.
 	
