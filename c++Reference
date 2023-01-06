@@ -66,6 +66,10 @@ int main() {
 	s.substr(2); // 앞에 2개를 빼고 마지막까지 반환
 	
 	s.substr(s.size() - 2); // 뒤에서 부터 2개 반환.
+	
+	_strupr_s(s, sizeof(s)); // string s 안을 s.size() 크기만큼 대문자로 변환한다. _strupr_s와 _strlwr_s은 cstring과 string.h 헤더파일을 추가해야한다.
+	
+	_strlwr_s(s, sizeof(s)); // string s 안을 s.size() 크기만큼 소문자로 변환한다. cstring으로 변환 과정을 거쳐야 하기에 잘사용하지 않는다.
 
 
 	list<int> l; // list를 선언한다.
