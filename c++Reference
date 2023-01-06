@@ -57,15 +57,15 @@ int main() {
 	
 	to_string(var); // 숫자를 string으로 바꿀 때 사용된다.
 	
-	toupper(s[i]); // 문자가 소문자인 경우 대문자로 바꿔준다. 아닐경우 그대로 반환
-	
-	tolower(s[i]); // 문자가 대문자인 경우 소문자로 바꿔준다. 아닐경우 그대로 반환
-	
 	s.substr(0, 2); // 0에서 2개만큼 자른다.
 	
 	s.substr(2); // 앞에 2개를 빼고 마지막까지 반환
 	
 	s.substr(s.size() - 2); // 뒤에서 부터 2개 반환.
+	
+	toupper(s[i]); // 문자가 소문자인 경우 대문자로 바꿔준다. 아닐경우 그대로 반환
+	
+	tolower(s[i]); // 문자가 대문자인 경우 소문자로 바꿔준다. 아닐경우 그대로 반환
 	
 	_strupr_s(s, sizeof(s)); // string s 안을 s.size() 크기만큼 대문자로 변환한다. _strupr_s와 _strlwr_s은 cstring과 string.h 헤더파일을 추가해야한다.
 	
@@ -205,6 +205,10 @@ int main() {
 	
 	
 	#include <cctype>
+	
+	toupper(s[i]); // 문자가 소문자인 경우 대문자로 바꿔준다. 아닐경우 그대로 반환
+	
+	tolower(s[i]); // 문자가 대문자인 경우 소문자로 바꿔준다. 아닐경우 그대로 반환
 	
 	isdigit(num); // num이 숫자면 1 아니면 0을 반환한다.
 	
