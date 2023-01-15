@@ -192,6 +192,15 @@ int main() {
 	
 	count_if(v.begin(), v.end(), func); // 배열안에 찾는 조건에 맞는 숫자가 몇개있는지 반환해준다. bool func함수로 따로 return해준다.
 	
+	transform(v.begin(), v.end(), v.begin(), twice); // (시작, 마지막, 반환위치, 연산작업) 배열안의 숫자를 두배 올려준다.
+	
+	transform(s.begin(), s.end(), s.begin(), ::tolower); // 배열안의 함수를 소문자로 변환시켜준다.
+	
+	transform(v.begin(), v.end(), v.begin(), [](int n) { // 이같이 원하는 배열안에 원하는 작업을 실행할 수 있음.
+		if (n >= 30) return n * 10;
+		else return n;
+		});
+	
 	
 	#include <numeric>
 	
