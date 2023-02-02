@@ -131,7 +131,7 @@ int main() {
 
 	priority_queue<int> pq; // priority_queue를 선언한다. 내림차순
 
-	priority_queue<int, vector<int>, greater<int> > pq; // priority_queue를 선언한다. 오름차순
+	priority_queue<int, vector<int>, greater<int>> pq; // priority_queue를 선언한다. 오름차순
 	
 	pq.push(var); // 변수 var에 있는 값을 큐에 집어넣는다.
 	
