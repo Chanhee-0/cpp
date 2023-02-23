@@ -246,7 +246,7 @@ int main() {
     		if(a[0] == b[0]) // 첫번째가 같으면
         		return a[1] < b[1]; // 두번째가 작은것부터
     		else
-        		return a[0] > b[0]; // 첫번째가 
+        		return a[0] > b[0]; // 같지 않은 경우 첫번째가 큰것 부터
 	}
 
 	return 0;
