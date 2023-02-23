@@ -241,6 +241,13 @@ int main() {
 	
 	s = regex_replace(s, regex("zero"), "0"); 문자열 s에서 "zero"로 지정된 것을 찾아 regex("zero") 0으로 바꾼다. regex_replace()
 	
+	
+	bool cmp(vector<int> a, vector<int> b){ // cmp를 이용하여 sort
+    		if(a[0] == b[0]) // 첫번째가 같으면
+        		return a[1] < b[1]; // 두번째가 작은것부터
+    		else
+        		return a[0] > b[0]; // 첫번째가 
+	}
 
 	return 0;
 }
