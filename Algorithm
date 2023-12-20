@@ -256,6 +256,8 @@ int main() {
 
 AVL 트리
 
+한쪽으로 편향되는 것을 막기 위해 회전으로 높이와 밸런스를 유지하는 트리
+
 #include <iostream>
 #include <queue>
 #include <unordered_map>
@@ -545,6 +547,8 @@ int main(){
 
 
 B 트리
+
+부모가 계속 부모보다 하나 많은 자식을 만들기 위해 밸런스를 조정
 
 #include <stdio.h>
 #include <stdlib.h>
