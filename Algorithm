@@ -142,7 +142,15 @@ int main() {
 	pq.size(); // 큐의 원소 갯수를 반환한다.
 	
 	pq.empty(); // pq가 비었으면 1, 비어있지 않다면 0을 반환한다.
-	
+
+
+	map<string, int> m;
+
+	set<int> m;
+
+	unordered_map<string,int> um;
+
+	unordered_set<int> us;
 	
 	multiset<int> ms; // 멀티셋 ms를 선언한다. 오름차순
 	
