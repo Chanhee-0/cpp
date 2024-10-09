@@ -146,7 +146,11 @@ int main() {
 
 	map<string, int> m;
 
-	set<int> m;
+	m["var"] = 3;
+
+	m["var"]++;
+
+	set<int> s;
 
 	unordered_map<string,int> um;
 
