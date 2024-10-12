@@ -98,6 +98,8 @@ int main() {
 	vector<int> v = {1, 2}; // 벡터에 해당 원소를 채운다.
 
 	v.push_back(var); // vector의 끝에 변수 var값을 원소로 집어넣는다.
+
+	v.pop_back(); // vector의 끝의 원소를 제거한다..
 	
 	v.erase(v.begin()); // vector의 첫 원소를 제거한다.
 	
@@ -125,9 +127,23 @@ int main() {
 
 	array<int, 50> arr;
 
+
 	deque<int> dq;
+
+
+	struct cmp{ // second 오름차순 같은 경우 first 오름차순
+	bool operator()(pair<int, int>&a, pair<int, int>&b) {
+              if (a.second == b.second)
+                  return a.first > b.first;
+              else
+                  return a.second > b.second;
+		}
+	};
+	priority_queue<pair<int,int>,vector<pair<int,int>>, cmp> pq; // 위의 구조체를 이용할 경우
+
+	priority_queue<pair<int,int>> pq; // 페어 이용할 경우
 	
-	
+	pq.top().first // 큐의 최상위값 중 첫번째 인자를 반환한다.
 
 	priority_queue<int> pq; // priority_queue를 선언한다. 내림차순
 
