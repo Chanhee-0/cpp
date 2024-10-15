@@ -159,6 +159,8 @@ int main() {
 	
 	pq.empty(); // pq가 비었으면 1, 비어있지 않다면 0을 반환한다.
 
+	pq = queue<int>(); // pq 재선언 clear의 역할이 가능하다.
+
 
 	map<string, int> m;
 
