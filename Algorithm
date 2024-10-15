@@ -164,6 +164,19 @@ int main() {
 
 	map<string, int> m;
 
+	for(iterator iter = m.begin(); iter!= m.end; iter++)
+	// iter로 접근하여 반복문 돌리는 와중에 지울 수 없음
+
+	*iter / iter->first / iter->second // 접근
+
+	m.erase(iter); // 삭제
+
+	m.erase(m.begin()); // 삭제
+
+	m[key] = 1; // 선언
+
+	m[key] += 1; // 선언 (Base 0)
+	
 	m["var"] = 3;
 
 	m["var"]++;
