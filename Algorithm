@@ -169,9 +169,11 @@ int main() {
 
 	*iter / iter->first / iter->second // 접근
 
-	m.erase(iter); // 삭제
+	m.erase(iter); // 접근 값 삭제
 
-	m.erase(m.begin()); // 삭제
+	m.erase(m.begin()); // 첫 값 삭제
+
+	m.erase(--m.end()); // 마지막 값 삭제
 
 	m[key] = 1; // 선언
 
@@ -187,7 +189,7 @@ int main() {
 
 	unordered_set<int> us;
 	
-	multiset<int> ms; // 멀티셋 ms를 선언한다. 오름차순
+	multiset<int> ms; // 멀티셋 ms를 선언한다. 오름차순 -> 트리, 자동 정렬, 키의 중복 가능
 	
 	multiset<int, greater<int>> ms; // 멀티셋 ms를 선언한다. 내림차순
 	
